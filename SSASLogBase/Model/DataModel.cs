@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace SSASLogBase.Models
 {
@@ -22,7 +23,7 @@ namespace SSASLogBase.Models
     public class SSASDatabase
     {
         public Guid ID { get; set; }
-        public string Name;
+        public string Name { get; set; }
         public ICollection<Refresh> Refreshes { get; set; }
 
         // Navigation properties
@@ -39,10 +40,12 @@ namespace SSASLogBase.Models
 
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         [DefaultValue(null)]  // accept the enum value as 0 too 
+        [JsonProperty("Type")]
         public RefreshType RefreshType { get; set; }
 
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         [DefaultValue(null)]  // accept the enum value as 0 too 
+        [JsonProperty("Status")]
         public RefreshStatus RefreshStatus { get; set; }
 
         public ICollection<Message> Messages { get; set; }
@@ -54,6 +57,8 @@ namespace SSASLogBase.Models
     public class Message
     {
         public Guid ID { get; set; }
+
+        [JsonProperty("Message")]
         public string Text { get; set; }
         public string Code { get; set; }
         public Location Location { get; set; }
@@ -87,19 +92,14 @@ namespace SSASLogBase.Models
 
     public enum RefreshType
     {
-        [EnumMember(Value = "Full")]
         Full
     }
 
     public enum RefreshStatus
     {
-        [EnumMember(Value = "Succeeded")]
         Succeeded,
-        [EnumMember(Value = "InProgress")]
         InProgress,
-        [EnumMember(Value = "Cancelled")]
         Cancelled,
-        [EnumMember(Value = "Failed")]
         Failed
     }
 }

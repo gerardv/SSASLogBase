@@ -43,78 +43,31 @@ namespace SSASLogBase.Controllers
             return View(refresh);
         }
 
-        // GET: Refreshes/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: Refreshes/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,StartTime,EndTime,RefreshType,RefreshStatus")] Refresh refresh)
+        public async Task<int> Create([FromBody] Refresh refresh, Guid id, string server, string database)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid 
+                && id.ToString() != "00000000-0000-0000-0000-000000000000" 
+                && server != null 
+                && database != null)
             {
-                refresh.ID = Guid.NewGuid();
+                refresh.ID = id;
+                refresh.Database = new SSASDatabase()
+                {
+                    Name = database,
+                    SSASServer = new SSASServer()
+                    {
+                        Name = server
+                    }
+                };
                 _context.Add(refresh);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(refresh);
-        }
 
-        // GET: Refreshes/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return 1;
             }
 
-            var refresh = await _context.Refreshes.FindAsync(id);
-            if (refresh == null)
-            {
-                return NotFound();
-            }
-            return View(refresh);
-        }
-
-        // POST: Refreshes/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("ID,StartTime,EndTime,RefreshType,RefreshStatus")] Refresh refresh)
-        {
-            if (id != refresh.ID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(refresh);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RefreshExists(refresh.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(refresh);
+            return 0;
         }
 
         // GET: Refreshes/Delete/5
