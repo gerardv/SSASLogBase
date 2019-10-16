@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using SSASLogBase.Data;
 using SSASLogBase.Models;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -44,6 +45,7 @@ namespace SSASLogBase.Controllers
         {
             AuthenticationResult result = null;
             HttpClient client = new HttpClient();
+            JsonSerializerSettings settings = new JsonSerializerSettings();
 
             if (id.ToString() == "00000000-0000-0000-0000-000000000000"
                 || server == null
@@ -70,27 +72,44 @@ namespace SSASLogBase.Controllers
 
                 // Using ADAL.Net, get a bearer token to access the Azure Analysis Service
                 result = await authContext.AcquireTokenAsync(AzureAdOptions.Settings.ServerAudience, credential);
+
+                // Set and fire the request to get the AS server's details, including it's current status
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, AzureAdOptions.Settings.ServerBaseAddress + server + "?" + AzureAdOptions.Settings.ServerAPIVersion);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-                HttpResponseMessage statusResponse = await client.SendAsync(request);
-                if ( ! statusResponse.IsSuccessStatusCode)
+                HttpResponseMessage serverResponse = await client.SendAsync(request);
+
+                // If that failed, return an error message
+                if ( ! serverResponse.IsSuccessStatusCode)
                 {
-                    return NotFound(); // This is incorrect!!!
+                    ViewBag.Message = "Something went terribly wrong... I cannot help you at this moment.";
+                    return View("PlainFeedback");
                 }
 
+                // Parse the received server details
+                string serverResponseString = await serverResponse.Content.ReadAsStringAsync();
+                ServerProperties serverProperties = JsonConvert.DeserializeObject<ServerProperties>(serverResponseString, settings);
+
+                // If the server's status does not equal 'Succeeded', return an error message.
+                if ( serverProperties.properties.state != "Succeeded")
+                {
+                    ViewBag.Message = "The server is not up and running, so I cannot retrieve the requested refresh details. Start the server or wait for it to finishing resuming or scaling and try again.";
+                    return View("PlainFeedback");
+                }
 
                 // Now we get a bearer token to access the Azure Analysis Service
                 result = await authContext.AcquireTokenAsync(AzureAdOptions.Settings.ModelAudience, credential);
-                // Retrieve the model's specific refresh details.
+
+                // Set and fire the request to get the AS model's refresh details
                 request = new HttpRequestMessage(HttpMethod.Get, AzureAdOptions.Settings.ModelBaseAddress + server + "/models/"+ model + "/refreshes/" +  id);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
                 HttpResponseMessage response = await client.SendAsync(request);
+
+                // We can (and should) now dispose of the http client.
                 client.Dispose();
 
                 if ( response.IsSuccessStatusCode)
                 {
                     string responseString = await response.Content.ReadAsStringAsync();
-                    JsonSerializerSettings settings = new JsonSerializerSettings();
                     try
                     {
                         refresh = JsonConvert.DeserializeObject<Refresh>(responseString, settings);
@@ -120,7 +139,8 @@ namespace SSASLogBase.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    ViewBag.Message = "Something went terribly wrong, right at the end... I cannot help you at this moment.";
+                    return View("PlainFeedback");
                 }
             }
 
