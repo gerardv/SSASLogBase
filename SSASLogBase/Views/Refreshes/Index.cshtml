@@ -4,10 +4,10 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Refresh logs</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p style="color: red">
+    Note: Times are displayed in UTC. Add 2 hours for CEST, or 1 hour for CET.
 </p>
 <table class="table">
     <thead>
@@ -19,7 +19,13 @@
                 @Html.DisplayNameFor(model => model.EndTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RefreshType)
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Database.SSASServer.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Database.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.RefreshStatus)
@@ -28,26 +34,49 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RefreshType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RefreshStatus)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartTime)
+                </td>
+                <td>
+                    @{
+                        if (item.EndTime.ToString() != "1/1/0001 12:00:00 AM")
+                        {
+                            @Html.DisplayFor(modelItem => item.EndTime);
+                        }
+                        else
+                        {
+                            @:--:--
+                        }
+                    }
+                </td>
+                <td>
+                    @{
+                        if (item.EndTime.ToString() != "1/1/0001 12:00:00 AM")
+                        {
+                            @Html.DisplayFor(modelItem => item.Duration);
+                        }
+                        else
+                        {
+                            @(DateTime.Now - item.StartTime + " and counting");
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Database.SSASServer.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Database.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RefreshStatus)
+                </td>
+                <td>
+                    <a href="refreshes/details/@item.ID?server=@item.Database.SSASServer.Name&model=@item.Database.Name">Details</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

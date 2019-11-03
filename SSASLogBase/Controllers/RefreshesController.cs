@@ -1,15 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+//using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Newtonsoft.Json;
 using SSASLogBase.Data;
 using SSASLogBase.Models;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace SSASLogBase.Controllers
 {
+    [Authorize]
     public class RefreshesController : Controller
     {
         private readonly DataContext _context;
@@ -20,54 +26,94 @@ namespace SSASLogBase.Controllers
         }
 
         // GET: Refreshes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Refreshes.ToListAsync());
+            // Todo: Add server / model filter to View
+
+            ViewBag.page = page;
+
+            return View(await _context.Refreshes
+                .Include("Database")
+                .Include("Database.SSASServer")
+                .Include("Messages")
+                .Skip(page - 1) // Todo: implement pagination in View.
+                .Take(10) // Todo: make this a parameter?
+                .OrderByDescending(r => r.StartTime)
+                .ToListAsync());
         }
 
         // GET: Refreshes/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        //public async Task<IActionResult> Details(Guid id, string server, string model)
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
+            if ( id.ToString() == "00000000-0000-0000-0000-000000000000" )
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var refresh = await _context.Refreshes
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (refresh == null)
-            {
-                return NotFound();
-            }
+            Refresh refresh = await _context.Refreshes
+                .Include("Database")
+                .Include("Database.SSASServer")
+                .Include("Messages")
+                .FirstOrDefaultAsync(l => l.ID == id);
+
+            if (refresh == null) return new NotFoundResult();
 
             return View(refresh);
         }
 
         // POST: Refreshes/Create
         [HttpPost]
-        public async Task<int> Create([FromBody] Refresh refresh, Guid id, string server, string database)
+        public async Task<ActionResult> Create([FromBody] Refresh refresh, Guid id, string server, string database)
         {
             if (ModelState.IsValid 
                 && id.ToString() != "00000000-0000-0000-0000-000000000000" 
                 && server != null 
                 && database != null)
             {
-                refresh.ID = id;
-                refresh.Database = new SSASDatabase()
+                if ( _context.Refreshes.Any(r => r.ID == id) )
                 {
-                    Name = database,
-                    SSASServer = new SSASServer()
+                    ViewBag.Message = "That refresh is logged already.";
+                    return View("PlainFeedback");
+                }
+
+                refresh.ID = id;
+                SSASServer _server = _context.Servers.Include("SSASDatabases").FirstOrDefault(s => s.Name == server);
+                if ( _server == null )
+                {
+                    _server = new SSASServer()
                     {
                         Name = server
+                    };
+                    refresh.Database = new SSASDatabase()
+                    {
+                        Name = database,
+                        SSASServer = _server
+                    };
+                }
+                else
+                {
+                    SSASDatabase _database = _server.SSASDatabases.FirstOrDefault(d => d.Name == database);
+                    if ( _database == null)
+                    {
+                        _database = new SSASDatabase()
+                        {
+                            Name = database,
+                            SSASServer = _server
+                        };
                     }
-                };
+                    refresh.Database = _database;
+                }
+
                 _context.Add(refresh);
                 await _context.SaveChangesAsync();
-
-                return 1;
+            }
+            else
+            {
+                return new BadRequestResult();
             }
 
-            return 0;
+            return new AcceptedResult();
         }
 
         // GET: Refreshes/Delete/5
