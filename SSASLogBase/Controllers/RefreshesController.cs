@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-//using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Newtonsoft.Json;
 using SSASLogBase.Data;
 using SSASLogBase.Models;
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace SSASLogBase.Controllers
@@ -43,7 +37,6 @@ namespace SSASLogBase.Controllers
         }
 
         // GET: Refreshes/Details/5
-        //public async Task<IActionResult> Details(Guid id, string server, string model)
         public async Task<IActionResult> Details(Guid id)
         {
             if ( id.ToString() == "00000000-0000-0000-0000-000000000000" )
@@ -63,6 +56,7 @@ namespace SSASLogBase.Controllers
         }
 
         // POST: Refreshes/Create
+        [AllowAnonymous] // Remove this if we can successfully authenticate with Azure AD from a Logic App HTTP POST action.
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] Refresh refresh, Guid id, string server, string database)
         {
@@ -117,37 +111,37 @@ namespace SSASLogBase.Controllers
         }
 
         // GET: Refreshes/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(Guid? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var refresh = await _context.Refreshes
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (refresh == null)
-            {
-                return NotFound();
-            }
+        //    var refresh = await _context.Refreshes
+        //        .FirstOrDefaultAsync(m => m.ID == id);
+        //    if (refresh == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(refresh);
-        }
+        //    return View(refresh);
+        //}
 
         // POST: Refreshes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var refresh = await _context.Refreshes.FindAsync(id);
-            _context.Refreshes.Remove(refresh);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(Guid id)
+        //{
+        //    var refresh = await _context.Refreshes.FindAsync(id);
+        //    _context.Refreshes.Remove(refresh);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
-        private bool RefreshExists(Guid id)
-        {
-            return _context.Refreshes.Any(e => e.ID == id);
-        }
+        //private bool RefreshExists(Guid id)
+        //{
+        //    return _context.Refreshes.Any(e => e.ID == id);
+        //}
     }
 }
