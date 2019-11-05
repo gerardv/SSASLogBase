@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SSASLogBase.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,6 +24,7 @@ namespace SSASLogBase.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
                     SSASServerID = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -66,6 +67,7 @@ namespace SSASLogBase.Migrations
                     ID = table.Column<Guid>(nullable: false),
                     Text = table.Column<string>(nullable: true),
                     Code = table.Column<string>(nullable: true),
+                    MessageType = table.Column<string>(nullable: true),
                     RefreshID = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -76,7 +78,7 @@ namespace SSASLogBase.Migrations
                         column: x => x.RefreshID,
                         principalTable: "Refresh",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

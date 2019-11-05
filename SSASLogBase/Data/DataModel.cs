@@ -78,9 +78,12 @@ namespace SSASLogBase.Models
 
         [JsonProperty("Message")]
         public string Text { get; set; }
+        
         public string Code { get; set; }
+        
         [JsonProperty("Type")]
         public string MessageType { get; set; }
+        
         public Location Location { get; set; }
 
         // Navigation properties

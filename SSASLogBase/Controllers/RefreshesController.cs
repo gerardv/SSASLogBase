@@ -111,33 +111,33 @@ namespace SSASLogBase.Controllers
         }
 
         // GET: Refreshes/Delete/5
-        //public async Task<IActionResult> Delete(Guid? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> Delete(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var refresh = await _context.Refreshes
-        //        .FirstOrDefaultAsync(m => m.ID == id);
-        //    if (refresh == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var refresh = await _context.Refreshes
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (refresh == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(refresh);
-        //}
+            return View(refresh);
+        }
 
         // POST: Refreshes/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(Guid id)
-        //{
-        //    var refresh = await _context.Refreshes.FindAsync(id);
-        //    _context.Refreshes.Remove(refresh);
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var refresh = await _context.Refreshes.FindAsync(id);
+            _context.Refreshes.Remove(refresh);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
 
         //private bool RefreshExists(Guid id)
         //{

@@ -77,6 +77,8 @@ namespace SSASLogBase
 
             app.UseCookiePolicy();
 
+            //UpdateDatabase(app);
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -84,5 +86,19 @@ namespace SSASLogBase
                     template: "{controller=Refreshes}/{action=Index}/{id?}");
             });
         }
+
+        //private static void UpdateDatabase(IApplicationBuilder app)
+        //{
+        //    using (var serviceScope = app.ApplicationServices
+        //        .GetRequiredService<IServiceScopeFactory>()
+        //        .CreateScope())
+        //    {
+        //        using (var context = serviceScope.ServiceProvider.GetService<Data.DataContext>())
+        //        {
+        //            context.Database.Migrate();
+        //        }
+        //    }
+        //}
+
     }
 }

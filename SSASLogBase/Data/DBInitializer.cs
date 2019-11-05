@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace SSASLogBase.Data
 {
@@ -9,7 +6,8 @@ namespace SSASLogBase.Data
     {
         public static void Initialize(DataContext context)
         {
-            context.Database.EnsureCreated();
+            //context.Database.EnsureCreated();
+            context.Database.Migrate();
         }
     }
 }

@@ -9,8 +9,8 @@ using SSASLogBase.Data;
 namespace SSASLogBase.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190929073404_AddGetterAndSetterToDatabaseName")]
-    partial class AddGetterAndSetterToDatabaseName
+    [Migration("20191105085530_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,8 @@ namespace SSASLogBase.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code");
+
+                    b.Property<string>("MessageType");
 
                     b.Property<Guid?>("RefreshID");
 
@@ -131,7 +133,8 @@ namespace SSASLogBase.Migrations
                 {
                     b.HasOne("SSASLogBase.Models.Refresh", "Refresh")
                         .WithMany("Messages")
-                        .HasForeignKey("RefreshID");
+                        .HasForeignKey("RefreshID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SSASLogBase.Models.Refresh", b =>

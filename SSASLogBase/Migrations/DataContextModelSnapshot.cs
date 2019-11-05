@@ -38,6 +38,8 @@ namespace SSASLogBase.Migrations
 
                     b.Property<string>("Code");
 
+                    b.Property<string>("MessageType");
+
                     b.Property<Guid?>("RefreshID");
 
                     b.Property<string>("Text");
@@ -129,7 +131,8 @@ namespace SSASLogBase.Migrations
                 {
                     b.HasOne("SSASLogBase.Models.Refresh", "Refresh")
                         .WithMany("Messages")
-                        .HasForeignKey("RefreshID");
+                        .HasForeignKey("RefreshID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SSASLogBase.Models.Refresh", b =>

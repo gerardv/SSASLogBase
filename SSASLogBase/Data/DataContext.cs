@@ -18,22 +18,34 @@ namespace SSASLogBase.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SSASServer>().ToTable("Server");
-            modelBuilder.Entity<SSASDatabase>().ToTable("Database");
-            modelBuilder.Entity<Refresh>().ToTable("Refresh");
-            modelBuilder.Entity<SourceObject>().ToTable("SourceObject");
+            modelBuilder.Entity<SSASServer>()
+                .ToTable("Server");
+
+            modelBuilder.Entity<SSASDatabase>()
+                .ToTable("Database");
+
+            modelBuilder.Entity<Refresh>()
+                .ToTable("Refresh")
+                .HasMany(r => r.Messages)
+                .WithOne(m => m.Refresh)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SourceObject>()
+                .ToTable("SourceObject");
 
             modelBuilder.Entity<Message>()
                 .ToTable("Message")
                 .HasOne(m => m.Location)
                 .WithOne(l => l.Message)
-                .HasForeignKey<Location>(k => k.MessagId);
+                .HasForeignKey<Location>(k => k.MessagId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Location>()
                 .ToTable("Location")
                 .HasOne(p => p.SourceObject)
                 .WithOne(i => i.Location)
-                .HasForeignKey<SourceObject>(b => b.LocationId);
+                .HasForeignKey<SourceObject>(b => b.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
