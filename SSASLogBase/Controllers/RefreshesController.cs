@@ -19,20 +19,25 @@ namespace SSASLogBase.Controllers
             _context = context;
         }
 
-        // GET: Refreshes
-        public async Task<IActionResult> Index(int page = 1)
+        /// <summary> 
+        /// GET: Refreshes
+        /// </summary>
+        /// <param name="p">Page number</param>
+        /// <returns></returns>
+        public async Task<IActionResult> Index(int p = 1)
         {
             // Todo: Add server / model filter to View
 
-            ViewBag.page = page;
+            ViewBag.page = p;
+            ViewBag.numPages = Math.Floor( (decimal) await _context.Refreshes.CountAsync() / 10 + 1 );
 
             return View(await _context.Refreshes
+                .OrderByDescending(r => r.StartTime)
+                .Skip(p - 1)
                 .Include("Database")
                 .Include("Database.SSASServer")
                 .Include("Messages")
-                .Skip(page - 1) // Todo: implement pagination in View.
                 .Take(10) // Todo: make this a parameter?
-                .OrderByDescending(r => r.StartTime)
                 .ToListAsync());
         }
 

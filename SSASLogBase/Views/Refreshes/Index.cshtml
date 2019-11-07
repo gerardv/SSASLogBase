@@ -74,9 +74,23 @@
                     @Html.DisplayFor(modelItem => item.RefreshStatus)
                 </td>
                 <td>
-                    <a href="refreshes/details/@item.ID?server=@item.Database.SSASServer.Name&model=@item.Database.Name">Details</a>
+                    <a href="refreshes/details/@item.ID">Details</a>
                 </td>
             </tr>
-        }
+                        }
     </tbody>
 </table>
+<div id="pager">
+    @{ 
+        int nextPage = ViewBag.page + 1;
+        int prevPage = ViewBag.page - 1;
+    }
+    @if ( ViewBag.page > 1 ) {
+            <a href="/?p=@prevPage"><i class="fas fa-angle-left"></i></a>
+        }
+    Page @ViewBag.page / @ViewBag.numPages
+    @if (ViewBag.page < ViewBag.numPages && ViewBag.numPages > 1)
+    {
+        <a href="/?p=@nextPage"><i class="fas fa-angle-right"></i></a>
+    }
+</div>
