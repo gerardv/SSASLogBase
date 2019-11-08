@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using SSASLogBase.Data;
 using SSASLogBase.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SSASLogBase.Controllers
@@ -22,24 +24,46 @@ namespace SSASLogBase.Controllers
         /// <summary> 
         /// GET: Refreshes
         /// </summary>
+        /// <param name="d">Database</param>
         /// <param name="p">Page number</param>
         /// <returns></returns>
-        public async Task<IActionResult> Index(int p = 1)
+        public async Task<IActionResult> Index( [Optional] Guid d, int p = 1 )
         {
-            // Todo: Add server / model filter to View
-
             int pageSize = 10;
+            List<Refresh> refreshes = new List<Refresh>();
+            
             ViewBag.page = p;
-            ViewBag.numPages = Math.Floor( (decimal) await _context.Refreshes.CountAsync() / 10 + 1 );
 
-            return View(await _context.Refreshes
-                .OrderByDescending(r => r.StartTime)
-                .Skip( (p - 1) * pageSize )
-                .Include("Database")
-                .Include("Database.SSASServer")
-                .Include("Messages")
-                .Take( pageSize ) // Todo: make this a parameter?
-                .ToListAsync());
+            if (d != Guid.Parse("00000000-0000-0000-0000-000000000000") )
+            {
+                refreshes =  await _context.Refreshes
+                    .OrderByDescending(r => r.StartTime)
+                    .Skip((p - 1) * pageSize)
+                    .Include("Database")
+                    .Include("Database.SSASServer")
+                    .Include("Messages")
+                    .Where(r => r.Database.ID == d)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                ViewBag.numPages = Math.Floor((decimal) await _context.Refreshes.Where(r => r.Database.ID == d).CountAsync() / pageSize + 1);
+            }
+            else
+            {
+                refreshes = await _context.Refreshes
+                    .OrderByDescending(r => r.StartTime)
+                    .Skip((p - 1) * pageSize)
+                    .Include("Database")
+                    .Include("Database.SSASServer")
+                    .Include("Messages")
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                ViewBag.numPages = Math.Floor( (decimal) await _context.Refreshes.CountAsync() / pageSize + 1);
+            }
+
+
+            return View( refreshes );
         }
 
         // GET: Refreshes/Details/5

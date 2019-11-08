@@ -68,7 +68,9 @@
                     @Html.DisplayFor(modelItem => item.Database.SSASServer.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Database.Name)
+                    <a href="?d=@item.Database.ID">
+                        @Html.DisplayFor(modelItem => item.Database.Name)
+                    </a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.RefreshStatus)
