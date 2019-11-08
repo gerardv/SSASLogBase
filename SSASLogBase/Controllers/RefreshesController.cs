@@ -28,16 +28,17 @@ namespace SSASLogBase.Controllers
         {
             // Todo: Add server / model filter to View
 
+            int pageSize = 10;
             ViewBag.page = p;
             ViewBag.numPages = Math.Floor( (decimal) await _context.Refreshes.CountAsync() / 10 + 1 );
 
             return View(await _context.Refreshes
                 .OrderByDescending(r => r.StartTime)
-                .Skip(p - 1)
+                .Skip( (p - 1) * pageSize )
                 .Include("Database")
                 .Include("Database.SSASServer")
                 .Include("Messages")
-                .Take(10) // Todo: make this a parameter?
+                .Take( pageSize ) // Todo: make this a parameter?
                 .ToListAsync());
         }
 
