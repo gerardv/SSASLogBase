@@ -54,6 +54,7 @@ namespace SSASLogBase.Controllers
                 .Include("Database")
                 .Include("Database.SSASServer")
                 .Include("Messages")
+                .Include("Messages.Location.SourceObject")
                 .FirstOrDefaultAsync(l => l.ID == id);
 
             if (refresh == null) return new NotFoundResult();
