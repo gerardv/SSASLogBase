@@ -37,13 +37,13 @@ namespace SSASLogBase.Controllers
             if (d != Guid.Parse("00000000-0000-0000-0000-000000000000") )
             {
                 refreshes =  await _context.Refreshes
+                    .Where(r => r.Database.ID == d)
                     .OrderByDescending(r => r.StartTime)
                     .Skip((p - 1) * pageSize)
+                    .Take(pageSize)
                     .Include("Database")
                     .Include("Database.SSASServer")
                     .Include("Messages")
-                    .Where(r => r.Database.ID == d)
-                    .Take(pageSize)
                     .ToListAsync();
 
                 ViewBag.numPages = Math.Floor((decimal) await _context.Refreshes.Where(r => r.Database.ID == d).CountAsync() / pageSize + 1);
@@ -53,10 +53,10 @@ namespace SSASLogBase.Controllers
                 refreshes = await _context.Refreshes
                     .OrderByDescending(r => r.StartTime)
                     .Skip((p - 1) * pageSize)
+                    .Take(pageSize)
                     .Include("Database")
                     .Include("Database.SSASServer")
                     .Include("Messages")
-                    .Take(pageSize)
                     .ToListAsync();
 
                 ViewBag.numPages = Math.Floor( (decimal) await _context.Refreshes.CountAsync() / pageSize + 1);
