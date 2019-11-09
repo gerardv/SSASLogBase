@@ -6,9 +6,19 @@
 
 <h1>Refresh logs</h1>
 
-<p style="color: red">
-    Note: Times are displayed in UTC. Add 2 hours for CEST, or 1 hour for CET.
-</p>
+@*The timezone selector*@
+<div class="float-right">
+    <form class="form-inline mb-2">
+        <div class="form-group">
+            <label for="TZSelector" class="">Timezone&nbsp;</label>
+            <select id="TZSelector" class="custom-select form-inline">
+                <option value="local">Local</option>
+                <option value="UTC" selected>UTC</option>
+            </select>
+        </div>
+    </form>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -36,63 +46,66 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartTime)
-                </td>
-                <td>
-                    @{
-                        if (item.EndTime.ToString() != "1/1/0001 12:00:00 AM")
-                        {
-                            @Html.DisplayFor(modelItem => item.EndTime);
-                        }
-                        else
-                        {
-                            @:--:--
-                        }
+        <tr>
+            <td class="time" aria-valuetext="@Html.DisplayFor(modelItem => item.StartTime)">@Html.DisplayFor(modelItem => item.StartTime)</td>
+            <td class="time" aria-valuetext="@Html.DisplayFor(modelItem => item.EndTime)">@Html.DisplayFor(modelItem => item.EndTime)</td>
+            @*<td class="time">
+                @{
+                    if (item.EndTime.ToString() != "1/1/0001 12:00:00 AM")
+                    {
+                        @Html.DisplayFor(modelItem => item.EndTime);
                     }
-                </td>
-                <td>
-                    @{
-                        if (item.EndTime.ToString() != "1/1/0001 12:00:00 AM")
-                        {
-                            @Html.DisplayFor(modelItem => item.Duration);
-                        }
-                        else
-                        {
-                            @(DateTime.Now - item.StartTime + " and counting");
-                        }
+                    else
+                    {
+                        @:--:--
                     }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Database.SSASServer.Name)
-                </td>
-                <td>
-                    <a href="?d=@item.Database.ID">
-                        @Html.DisplayFor(modelItem => item.Database.Name)
-                    </a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RefreshStatus)
-                </td>
-                <td>
-                    <a href="refreshes/details/@item.ID">Details</a>
-                </td>
-            </tr>
-                        }
+                }
+            </td>*@
+            <td>
+                @{
+                    if (item.EndTime.ToString() != "1/1/0001 12:00:00 AM")
+                    {
+                        @Html.DisplayFor(modelItem => item.Duration);
+                    }
+                    else
+                    {
+                        @(DateTime.Now - item.StartTime + " and counting");
+                    }
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Database.SSASServer.Name)
+            </td>
+            <td>
+                <a href="?d=@item.Database.ID">
+                    @Html.DisplayFor(modelItem => item.Database.Name)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RefreshStatus)
+            </td>
+            <td>
+                <a href="refreshes/details/@item.ID">Details</a>
+            </td>
+        </tr>
+        }
     </tbody>
 </table>
 <div id="pager">
-    @{ 
+    @{
         int nextPage = ViewBag.page + 1;
         int prevPage = ViewBag.page - 1;
     }
-    @if ( ViewBag.page > 1 ) {
-            <a href="/?p=@prevPage"><i class="fas fa-angle-left"></i></a>
-        }
+    @if (ViewBag.page > 1)
+    {
+        <a href="/?p=@prevPage"><i class="fas fa-angle-left"></i></a>
+    }
     Page @ViewBag.page / @ViewBag.numPages
     @if (ViewBag.page < ViewBag.numPages && ViewBag.numPages > 1)
     {
         <a href="/?p=@nextPage"><i class="fas fa-angle-right"></i></a>
     }
 </div>
+
+@section Scripts {
+}

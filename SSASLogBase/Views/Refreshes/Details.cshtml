@@ -6,9 +6,21 @@
 
 <h1>Refresh details</h1>
 
-<p style="color: red">
-    Note: Times are displayed in UTC. Add 2 hours for CEST, or 1 hour for CET.
-</p>
+@*The timezone selector*@
+<div class="clearfix">
+    <div class="float-right">
+        <form class="form-inline mb-2">
+            <div class="form-group">
+                <label for="TZSelector" class="">Timezone&nbsp;</label>
+                <select id="TZSelector" class="custom-select form-inline">
+                    <option value="local">Local</option>
+                    <option value="UTC" selected>UTC</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div>
     <hr />
     <dl class="row">
@@ -27,13 +39,13 @@
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.StartTime)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10 time" aria-valuetext="@Html.DisplayFor(model => model.StartTime)">
             @Html.DisplayFor(model => model.StartTime)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.EndTime)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10 time" aria-valuetext="@Html.DisplayFor(model => model.EndTime)">
             @Html.DisplayFor(model => model.EndTime)
         </dd>
         <dt class="col-sm-2">
