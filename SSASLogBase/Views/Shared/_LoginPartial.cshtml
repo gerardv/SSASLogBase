@@ -3,9 +3,9 @@
 <ul class="navbar-nav">
 @if (User.Identity.IsAuthenticated)
 {
-        <li class="nav-item">
+        @*<li class="nav-item">
             <span class="nav-link text-dark">Hello @ViewData["DisplayName"]</span>
-        </li>
+        </li>*@
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="AzureAD" asp-controller="Account" asp-action="SignOut">Sign out</a>
         </li>
