@@ -5,7 +5,7 @@
 $("#TZSelector").change(function() {
     var offset = 0;
     //...to 'local'
-    if ($("#TZSelector option:selected").val() == "local") {
+    if ($("#TZSelector option:selected").val() === "local") {
         //get the user's utc offset using the moment.js library
         offset = moment().utcOffset();
     }
