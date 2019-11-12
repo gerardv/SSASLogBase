@@ -87,35 +87,49 @@
 @section Scripts {
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-    google.charts.load('43', {'packages':['bar']});
+    google.charts.load('current', {'packages':['timeline']});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
 
         var data = new google.visualization.DataTable();
-        data.addColumn('datetime', '');
-        data.addColumn('timeofday', "Duration");
+        data.addColumn({ type: 'string', id: 'Datum' });
+        data.addColumn({ type: 'string', id: 'Result' });
+        data.addColumn({ type: 'datetime', id: 'Start' });
+        data.addColumn({ type: 'datetime', id: 'End' });
 
-            @foreach (var item in Model)
-            {
-                <text>
-                    data.addRows([
-                    [   new Date(@item.StartTime.Year, @item.StartTime.Month   , @item.StartTime.Day, @item.StartTime.Hour, @item.StartTime.Minute, @item.StartTime.Second)
-                      , [@item.Duration.Hours, @item.Duration.Minutes, @item.Duration.Seconds]
-                    ]
-                    ]);
-                </text>
-            }
+        @foreach (var item in Model)
+        {
+            <text>
+                data.addRows([
+                [     "@item.StartTime.ToString()"
+                    , "@item.RefreshStatus"
+                        , new Date(2000, 0, 1, @item.StartTime.Hour, @item.StartTime.Minute, @item.StartTime.Second)
+                    </text>
+                @if(item.EndTime.Day > item.StartTime.Day) {
+    <text>
+                    , new Date(2000, 0, 2, @item.EndTime.Hour, @item.EndTime.Minute, @item.EndTime.Second)
+     </text>
+    } else {
+    <text>
+                    , new Date(2000, 0, 1, @item.EndTime.Hour, @item.EndTime.Minute, @item.EndTime.Second)
+</text>
+    }
+        <text>
+                ]
+                ]);
+            </text>
+        }
 
       var options = {
           title: "Duration"
           , legend: { position: 'none' }
-          , height: 450
+          , height: 800
       };
 
-      var chart = new google.charts.Bar(document.getElementById('chart_div'));
+      var chart = new google.visualization.Timeline( document.getElementById('chart_div') );
 
-      chart.draw(data, google.charts.Bar.convertOptions(options));
+      chart.draw(data, options);
     }
 </script>
 }
