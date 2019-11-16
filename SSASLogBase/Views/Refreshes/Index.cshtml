@@ -115,20 +115,20 @@
                 data.addRows([
                 [     "@item.StartTime.ToString()"
                     , "@item.RefreshStatus"
-                        , new Date(2000, 0, 1, @item.StartTime.Hour, @item.StartTime.Minute, @item.StartTime.Second)
+                    , new Date(2000, 0, 1, @item.StartTime.Hour, @item.StartTime.Minute, @item.StartTime.Second)
+            </text>
+                    @if(item.EndTime.Day > item.StartTime.Day || item.EndTime.ToString() == "1/1/0001 12:00:00 AM") {
+                    <text>
+                        , new Date(2000, 0, 2, @item.EndTime.Hour, @item.EndTime.Minute, @item.EndTime.Second)
                     </text>
-                @if(item.EndTime.Day > item.StartTime.Day) {
-    <text>
-                    , new Date(2000, 0, 2, @item.EndTime.Hour, @item.EndTime.Minute, @item.EndTime.Second)
-     </text>
-    } else {
-    <text>
-                    , new Date(2000, 0, 1, @item.EndTime.Hour, @item.EndTime.Minute, @item.EndTime.Second)
-</text>
-    }
-        <text>
+                    } else {
+                    <text>
+                        , new Date(2000, 0, 1, @item.EndTime.Hour, @item.EndTime.Minute, @item.EndTime.Second)
+                    </text>
+                    }
+            <text>
                 ]
-                ]);
+            ]);
             </text>
         }
 
