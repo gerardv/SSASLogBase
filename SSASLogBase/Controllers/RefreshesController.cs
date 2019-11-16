@@ -47,6 +47,7 @@ namespace SSASLogBase.Controllers
                     .ToListAsync();
 
                 ViewBag.numPages = Math.Floor((decimal) await _context.Refreshes.Where(r => r.Database.ID == d).CountAsync() / pageSize + 1);
+                ViewBag.filteredDatabase = refreshes.FirstOrDefault().Database.SSASServer.Name + " - " + refreshes.FirstOrDefault().Database.Name;
             }
             else
             {

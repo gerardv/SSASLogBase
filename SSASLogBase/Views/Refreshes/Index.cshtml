@@ -19,6 +19,17 @@
     </form>
 </div>
 
+<div id="filters">
+    @if (ViewBag.filteredDatabase != null)
+    {
+        <span>Filters</span>
+        <span class="badge badge-primary">
+            Database: @ViewBag.filteredDatabase
+            <a href="/" class="badge badge-light">X</a>
+        </span>
+    }
+</div>
+
 <table class="table">
     <thead>
         <tr>
