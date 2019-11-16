@@ -13,8 +13,8 @@ $("#TZSelector").change(function() {
     //and iterate over all time-class
     $(".time").each(function() {
         //get the original time from the aria-valuetext attribute
-        ct = moment($(this).attr('aria-valuetext'), "D/M/YYYY h:mm:ss A");
+        ct = moment($(this).attr('aria-valuetext'), "M/D/YYYY h:mm:ss A");
         //add the user's utc offset
-        $(this).html(moment(ct).add(offset, 'm').format("D/M/YYYY h:mm:ss A"));
+        $(this).html(moment(ct).add(offset, 'm').format("M/D/YYYY h:mm:ss A"));
     });
 });
