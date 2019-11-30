@@ -27,9 +27,9 @@ namespace SSASLogBase.Controllers
         /// <param name="d">Database</param>
         /// <param name="p">Page number</param>
         /// <returns></returns>
-        public async Task<IActionResult> Index( [Optional] Guid d, int p = 1 )
+        public async Task<IActionResult> Index( [Optional] Guid d, int p = 1, int pl = 10 )
         {
-            int pageSize = 10;
+            int pageSize = pl;
             List<Refresh> refreshes = new List<Refresh>();
             
             ViewBag.page = p;
@@ -46,7 +46,9 @@ namespace SSASLogBase.Controllers
                     .Include("Messages")
                     .ToListAsync();
 
-                ViewBag.numPages = Math.Floor((decimal) await _context.Refreshes.Where(r => r.Database.ID == d).CountAsync() / pageSize + 1);
+                decimal numPages = (decimal) await _context.Refreshes.Where(r => r.Database.ID == d).CountAsync() / pageSize;
+                ViewBag.numPages = Math.Floor( numPages );
+                if (numPages != ViewBag.numPages) ViewBag.numPages += 1;
                 ViewBag.filteredDatabaseName = refreshes.FirstOrDefault().Database.SSASServer.Name + " - " + refreshes.FirstOrDefault().Database.Name;
                 ViewBag.filteredDatabaseID = refreshes.FirstOrDefault().Database.ID;
             }
@@ -61,7 +63,9 @@ namespace SSASLogBase.Controllers
                     .Include("Messages")
                     .ToListAsync();
 
-                ViewBag.numPages = Math.Floor( (decimal) await _context.Refreshes.CountAsync() / pageSize + 1);
+                decimal numPages = (decimal) await _context.Refreshes.CountAsync() / pageSize;
+                ViewBag.numPages = Math.Floor(numPages);
+                if (numPages != ViewBag.numPages) ViewBag.numPages += 1;
             }
 
 
