@@ -31,8 +31,9 @@ namespace SSASLogBase.Controllers
         {
             int pageSize = pl;
             List<Refresh> refreshes = new List<Refresh>();
-            
+
             ViewBag.page = p;
+            ViewBag.pageLength = pl;
 
             if (d != Guid.Parse("00000000-0000-0000-0000-000000000000") )
             {
