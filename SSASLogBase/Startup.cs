@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SSASLogBase.Configuration;
 
 namespace SSASLogBase
 {
@@ -23,17 +24,23 @@ namespace SSASLogBase
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(SkarpRockstarsAuthorizationPolicy.Name,
+                                  SkarpRockstarsAuthorizationPolicy.Build);
+            });
+            
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-                .AddAzureAd(options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-                    AzureAdOptions.Settings = options;
-                })
-                .AddCookie();
+            .AddAzureAd(options =>
+            {
+                Configuration.Bind("AzureAd", options);
+                AzureAdOptions.Settings = options;
+            })
+            .AddCookie();
 
             _ = services.AddDbContext<Data.DataContext>(options =>
                       options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));

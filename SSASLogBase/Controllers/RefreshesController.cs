@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SSASLogBase.Controllers
 {
-    [Authorize]
+    [Authorize("Skarp Rockstars")]
     public class RefreshesController : Controller
     {
         private readonly DataContext _context;
